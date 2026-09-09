@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ujszem</title>
+</head>
+<style>
+
+body{
+    overflow: hidden;
+}
+
+
+/*dropdown menu*/
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.site-menu {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  left: 16px;
+  display: flex;
+  align-items: center;
+  width: auto;
+  height: 76px;
+  z-index: 10;
+  perspective: 900px;
+}
+
+.site-menu.is-scrolled {
+  background: transparent;
+}
+
+.publications-title {
+  position: fixed;
+  top: 16px;
+  left: 30px;
+  z-index: 13;
+  display: flex;
+  align-items: center;
+  height: 76px;
+  margin: 0;
+  color: #fff;
+  font: 700 24px/1 Arial, sans-serif;
+  white-space: nowrap;
+  opacity: 0;
+  transform: translateX(calc(100vw - 64px));
+  transition: opacity 450ms ease, transform 450ms ease;
+  pointer-events: none;
+}
+
+.site-menu.is-scrolled .publications-title {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.menu-toggle {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 12;
+  display: block;
+  width: 76px;
+  height: 76px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  flex: 0 0 76px;
+  margin-left: auto;
+}
+
+.menu-toggle::before {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: -1;
+  width: 76px;
+  height: 76px;
+  background: transparent;
+  content: '';
+  transition: width 450ms ease, background-color 450ms ease, box-shadow 450ms ease;
+}
+
+.site-menu.is-scrolled .menu-toggle::before {
+  width: calc(100vw - 64px);
+  background: #003049;
+  box-shadow: 0 10px 25px rgb(0 0 0 / 22%);
+}
+
+.logo-cube {
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  transform-style: preserve-3d;
+  transition: transform 700ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.menu-toggle:hover .logo-cube,
+.site-menu:focus-within .logo-cube,
+.site-menu.is-open .logo-cube {
+  transform: rotateY(180deg);
+}
+
+.cube-face {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  backface-visibility: hidden;
+  border: 3px solid #fff;
+  box-shadow: 0 10px 25px rgb(0 0 0 / 22%);
+}
+
+.cube-face--front {
+  background: #b90f13;
+}
+
+.cube-face--front img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cube-face--back {
+  color: #fff;
+  background: #003049;
+  transform: rotateY(180deg);
+}
+
+.cube-face--back img {
+  width: 50%;
+  height: 50%;
+  object-fit: cover;
+}
+
+.dropdown {
+  position: absolute;
+  top: 92px;
+  right: 16px;
+  z-index: 3;
+  width: 76px;
+  margin: 0;
+  padding: 0 0 0;
+  list-style: none;
+  background: #003049;
+  box-shadow: 0 12px 30px rgb(0 0 0 / 25%);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-8px);
+  transition: opacity 220ms ease, transform 220ms ease;
+}
+
+.menu-toggle:hover + .dropdown,
+.dropdown:hover,
+.site-menu:focus-within .dropdown,
+.site-menu.is-open .dropdown {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.dropdown a {
+  position: relative;
+  z-index: 1;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 76px;
+  min-height: 56px;
+  padding: 10px 0;
+  color: #fff;
+  font: 700 12px/1.2 Arial, sans-serif;
+  text-decoration: none;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.dropdown li {
+  position: relative;
+}
+
+.dropdown li::before {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 0;
+  height: 56px;
+  background: #003049;
+  content: '';
+  transition: width 220ms ease;
+}
+
+.dropdown li:hover::before,
+.dropdown li:focus-within::before {
+  width: 200px;
+}
+
+.dropdown a::after {
+  content: attr(data-label);
+  font: 700 16px/1.2 Arial, sans-serif;
+  position: absolute;
+  right: 110%;
+  overflow: hidden;
+  max-width: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: max-width 220ms ease, opacity 160ms ease;
+}
+
+.dropdown a img {
+  order: 2;
+  width: 32px;
+  height: 32px;
+  flex: 0 0 32px;
+  object-fit: contain;
+}
+
+.dropdown a:focus-visible {
+  outline: none;
+}
+
+.dropdown li:hover a::after,
+.dropdown li:focus-within a::after {
+  max-width: 110px;
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .logo-cube,
+  .dropdown {
+    transition: none;
+  }
+}
+
+/* auto scrolling cards */
+
+.slider-container {
+  overflow: auto;
+  width: 100%;
+  white-space: wrap;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+}
+
+.slider-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  margin: 0 auto;
+}
+
+.slider-container h3, .slider-container p {
+  text-align: left;
+  font-family: Arial, sans-serif;
+  margin: 0px auto;
+  text-align: justify;
+}
+
+.cards-viewport {
+  box-sizing: border-box;
+  height: 100vh;
+  overflow-y: auto;
+  padding: 20px 0;
+  scrollbar-width: thin;
+}
+
+.slider-track {
+  display: flex;
+  width: max-content;
+  flex-direction: column;
+  margin-left: 30px;
+  margin-top: 24px;
+}
+
+.card-group {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.card {
+  width: 250px;
+  height: 500px;
+  margin-bottom: 20px;
+  border: 3px solid #fff;
+  box-shadow: 0 10px 25px rgb(0 0 0 / 22%);
+  align-self: center;
+  transition: cubic-bezier(0.075, 0.82, 0.165, 1);
+  transition-duration: 1s;
+  cursor: pointer;
+}
+
+.card:hover{
+    transition: cubic-bezier(0.075, 0.82, 0.165, 1);
+    transition-duration: 1s;
+    width: 270px;
+    height: 520px;
+}
+
+</style>
+<body>
+  <nav class="site-menu" aria-label="Main navigation">
+    <h1 class="publications-title">Newest publications</h1>
+    <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-dropdown">
+      <span class="logo-cube" aria-hidden="true">
+        <span class="cube-face cube-face--front"><img src="logo.png" alt=""></span>
+        <span class="cube-face cube-face--back"><img src="hamburgerMenu.png" alt="Menu"></span>
+      </span>
+      <span class="sr-only">Open menu</span>
+    </button>
+    <ul class="dropdown" id="site-dropdown">
+      <li><a href="#film" data-label="film"><img src="icons8-movie-projector-50.png" alt="film"></a></li>
+      <li><a href="#praxis" data-label="praxis"><img src="icons8-charity-50.png" alt="praxis"></a></li>
+      <li><a href="#think" data-label="think"><img src="icons8-think-48.png" alt="think"></a></li>
+      <li><a href="#passion" data-label="passion"><img src="icons8-flame-48.png" alt="passion"></a></li>
+      <li><a href="#programs" data-label="programs"><img src="icons8-list-48.png" alt="programs"></a></li>
+    </ul>
+  </nav>
+
+    <div class="cards-viewport" aria-label="Scrolling cards">
+        <div class="slider-track">
+            <div class="card-group">
+        <div class="card">
+            <img class="slider-container" src="cardIMG1.png" alt="card 1">
+            <h3 class="slider-container">Jozsika Pistike</h3>
+            <p class="slider-container">Per laoreet maecenas praesent, tellus curae nulla, volutpat ante lacus interdum nunc justo vulputate cras. Accumsan enim nisi duis, primis pharetra faucibus, venenatis justo hac vitae aptent tempor est nec. Nisl et praesent phasellus, sit purus quisque, neque diam ad elit malesuada donec. Senectus egestas hendrerit, ut pretium, accumsan suscipit porta nunc etiam varius aptent. Duis cras a, porta ipsum, aenean inceptos metus adipiscing pharetra. Ullamcorper dapibus, sed feugiat tempus.</p>
+        </div>
+        <div class="card">
+            <img class="slider-container" src="cardIMG2.png" alt="card 2">
+            <h3 class="slider-container">Jozsika Pistike</h3>
+            <p class="slider-container">Per laoreet maecenas praesent, tellus curae nulla, volutpat ante lacus interdum nunc justo vulputate cras. Accumsan enim nisi duis, primis pharetra faucibus, venenatis justo hac vitae aptent tempor est nec. Nisl et praesent phasellus, sit purus quisque, neque diam ad elit malesuada donec. Senectus egestas hendrerit, ut pretium, accumsan suscipit porta nunc etiam varius aptent. Duis cras a, porta ipsum, aenean inceptos metus adipiscing pharetra. Ullamcorper dapibus, sed feugiat tempus.</p>
+        </div>
+        <div class="card">
+            <img class="slider-container" src="cardIMG3.png" alt="card 3">
+            <h3 class="slider-container">Jozsika Pistike</h3>
+            <p class="slider-container">Per laoreet maecenas praesent, tellus curae nulla, volutpat ante lacus interdum nunc justo vulputate cras. Accumsan enim nisi duis, primis pharetra faucibus, venenatis justo hac vitae aptent tempor est nec. Nisl et praesent phasellus, sit purus quisque, neque diam ad elit malesuada donec. Senectus egestas hendrerit, ut pretium, accumsan suscipit porta nunc etiam varius aptent. Duis cras a, porta ipsum, aenean inceptos metus adipiscing pharetra. Ullamcorper dapibus, sed feugiat tempus.</p>
+        </div>
+
+        <!--dupe cards-->
+        </div>
+        <div class="card-group" aria-hidden="true">
+        <div class="card">
+            <img class="slider-container" src="cardIMG1.png" alt="card 1">
+            <h3 class="slider-container">Jozsika Pistike</h3>
+            <p class="slider-container">Per laoreet maecenas praesent, tellus curae nulla, volutpat ante lacus interdum nunc justo vulputate cras. Accumsan enim nisi duis, primis pharetra faucibus, venenatis justo hac vitae aptent tempor est nec. Nisl et praesent phasellus, sit purus quisque, neque diam ad elit malesuada donec. Senectus egestas hendrerit, ut pretium, accumsan suscipit porta nunc etiam varius aptent. Duis cras a, porta ipsum, aenean inceptos metus adipiscing pharetra. Ullamcorper dapibus, sed feugiat tempus.</p>
+        </div>
+        <div class="card">
+            <img class="slider-container" src="cardIMG2.png" alt="card 2">
+            <h3 class="slider-container">Jozsika Pistike</h3>
+            <p class="slider-container">Per laoreet maecenas praesent, tellus curae nulla, volutpat ante lacus interdum nunc justo vulputate cras. Accumsan enim nisi duis, primis pharetra faucibus, venenatis justo hac vitae aptent tempor est nec. Nisl et praesent phasellus, sit purus quisque, neque diam ad elit malesuada donec. Senectus egestas hendrerit, ut pretium, accumsan suscipit porta nunc etiam varius aptent. Duis cras a, porta ipsum, aenean inceptos metus adipiscing pharetra. Ullamcorper dapibus, sed feugiat tempus.</p>
+        </div>
+        <div class="card">
+            <img class="slider-container" src="cardIMG3.png" alt="card 3">
+            <h3 class="slider-container">Jozsika Pistike</h3>
+            <p class="slider-container">Per laoreet maecenas praesent, tellus curae nulla, volutpat ante lacus interdum nunc justo vulputate cras. Accumsan enim nisi duis, primis pharetra faucibus, venenatis justo hac vitae aptent tempor est nec. Nisl et praesent phasellus, sit purus quisque, neque diam ad elit malesuada donec. Senectus egestas hendrerit, ut pretium, accumsan suscipit porta nunc etiam varius aptent. Duis cras a, porta ipsum, aenean inceptos metus adipiscing pharetra. Ullamcorper dapibus, sed feugiat tempus.</p>
+        </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      const menu = document.querySelector('.site-menu');
+      const toggle = document.querySelector('.menu-toggle');
+
+      toggle.addEventListener('click', () => {
+        const isOpen = menu.classList.toggle('is-open');
+        toggle.setAttribute('aria-expanded', isOpen);
+      });
+
+      document.addEventListener('click', (event) => {
+        if (!menu.contains(event.target)) {
+          menu.classList.remove('is-open');
+          toggle.setAttribute('aria-expanded', 'false');
+        }
+      });
+
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+          menu.classList.remove('is-open');
+          toggle.setAttribute('aria-expanded', 'false');
+          toggle.focus();
+        }
+      });
+
+      const cardsViewport = document.querySelector('.cards-viewport');
+
+      cardsViewport.addEventListener('scroll', () => {
+        menu.classList.toggle('is-scrolled', cardsViewport.scrollTop > 20);
+      }, { passive: true });
+
+      const cards = document.querySelectorAll('.card');
+
+      cards.forEach((card) => {
+        card.addEventListener('click', () => {
+          window.location.href = 'examplePublication.html';
+        });
+      });
+/*
+      const firstCardGroup = document.querySelector('.card-group');
+      let autoScroll = true;
+      let lastFrameTime = performance.now();
+
+      cardsViewport.addEventListener('mouseenter', () => {
+        autoScroll = false;
+      });
+
+      cardsViewport.addEventListener('mouseleave', () => {
+        autoScroll = true;
+        lastFrameTime = performance.now();
+      });
+
+      cardsViewport.addEventListener('wheel', () => {
+        autoScroll = false;
+      }, { passive: true });
+
+      function animateCards(currentTime) {
+        const elapsed = currentTime - lastFrameTime;
+        lastFrameTime = currentTime;
+
+        if (autoScroll && firstCardGroup) {
+          cardsViewport.scrollTop += elapsed * 0.035;
+
+          if (cardsViewport.scrollTop >= firstCardGroup.offsetHeight) {
+            cardsViewport.scrollTop -= firstCardGroup.offsetHeight;
+          }
+        }
+
+        requestAnimationFrame(animateCards);
+      }
+
+      requestAnimationFrame(animateCards);
+*/
+    </script>
+    </body>
+</html>
