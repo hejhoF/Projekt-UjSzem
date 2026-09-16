@@ -96,3 +96,7 @@
 * Számlaszám és utalási információk
 
 ---
+
+## 🛢 Adatbázis
+
+<img width="945" height="378" alt="image" src="https://github.com/user-attachments/assets/279a6d02-653a-425c-989c-55b8443fd0ec" />
